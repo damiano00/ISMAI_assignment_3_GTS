@@ -3,4 +3,4 @@ Game-playing agents for playing the abstract board game Breakthrough (https://en
 
 template: Yngvi Björnsson, Professor @ RU
 
-authors alpha-beta & MCTS:<a href="[https://www.w3schools.com](https://github.com/damiano00)">Damiano Pasquini</a> & <a href="[https://www.w3schools.com](https://github.com/HarlockOfficial)https://github.com/HarlockOfficial">Francesco Moschella</a>
+authors alpha-beta & MCTS: <a href="https://github.com/damiano00">Damiano Pasquini</a> & <a href="https://github.com/HarlockOfficial">Francesco Moschella</a>
