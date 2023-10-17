@@ -35,27 +35,37 @@ class ABAgent(mm_based_agent.MMBasedAgent):
         return all_pieces_in_triangle
 
     @classmethod
+    def get_all_pieces(cls, board, color):
+        return [board.col_row(piece) for piece in board.get_pce_locations(color)]
+
+    @classmethod
+    def get_move_value(cls, all_pieces_in_triangle, next_row):
+        overall_state = 0
+        for index, row in enumerate(all_pieces_in_triangle):
+            overall_state += row * 1/(index + 1) * next_row * 10
+        return overall_state
+
+    @classmethod
     def evaluate_state_white(cls, state):
         overall_state = 0
-        all_white_pieces_position2d = [state.col_row(piece) for piece in state.get_pce_locations(Breakthrough.White)]
-        all_black_pieces_position2d = [state.col_row(piece) for piece in state.get_pce_locations(Breakthrough.Black)]
+        all_white_pieces_position2d = cls.get_all_pieces(state, Breakthrough.White)
+        all_black_pieces_position2d = cls.get_all_pieces(state, Breakthrough.Black)
         # all_pieces_position2d = all_white_pieces_position2d + all_black_pieces_position2d
         # Note these two vars are column, row pairs
         for white_piece2d in all_white_pieces_position2d:
             if white_piece2d[1] == state.rows() - 1:
                 overall_state += 1000
                 continue
-            all_pieces_in_triangle = cls.find_all_black_pieces_probability_in_triangle_by_row(
+            all_pieces_in_triangle = cls.find_all_white_pieces_probability_in_triangle_by_row(
                 white_piece2d, all_black_pieces_position2d, state.rows() - 1, state.cols())
-            for index, row in enumerate(all_pieces_in_triangle):
-                overall_state += (1 - row) * 1/(index + 1) * (white_piece2d[1] + 1) * 10
+            overall_state += cls.get_move_value(all_pieces_in_triangle, white_piece2d[1] + 1)
         return overall_state
 
     @classmethod
     def evaluate_state_black(cls, state):
         overall_state = 0
-        all_white_pieces_position2d = [state.col_row(piece) for piece in state.get_pce_locations(Breakthrough.White)]
-        all_black_pieces_position2d = [state.col_row(piece) for piece in state.get_pce_locations(Breakthrough.Black)]
+        all_white_pieces_position2d = cls.get_all_pieces(state, Breakthrough.White)
+        all_black_pieces_position2d = cls.get_all_pieces(state, Breakthrough.Black)
         # all_pieces_position2d = all_white_pieces_position2d + all_black_pieces_position2d
         # Note these two vars are column, row pairs
         for black_piece2d in all_black_pieces_position2d:
@@ -64,21 +74,11 @@ class ABAgent(mm_based_agent.MMBasedAgent):
                 continue
             all_pieces_in_triangle = cls.find_all_black_pieces_probability_in_triangle_by_row(
                 black_piece2d, all_white_pieces_position2d, 0, state.cols())
-            for index, row in enumerate(all_pieces_in_triangle):
-                overall_state += (1 - row) * 1/(index + 1) * (state.rows() - black_piece2d[1]) * 10
+            overall_state += cls.get_move_value(all_pieces_in_triangle, state.rows() - black_piece2d[1])
         return overall_state
 
     @classmethod
     def evaluate_state(cls, game, state):
-        """
-        Evaluate the given <state> of the game.
-        Victory conditions:
-            - Piece in opposite last row (White: board size - row length / Black: row length)
-            - No opponent pieces left
-            - Opponent has no legal moves (and player has at least 1 legal move)
-            -
-
-        """
         if game.get_to_move() == state.White:
             return cls.evaluate_state_white(state)
         return cls.evaluate_state_black(state)

@@ -3,6 +3,7 @@ import random
 import copy
 import misc.utils as utils
 import misc.tree as tree
+from agents.ab_agent import ABAgent
 
 C = 1 / math.sqrt(2)
 
@@ -34,9 +35,31 @@ class Search:
         return random.choice(capture_moves) if capture_moves else random.choice(moves)
 
     def playout_policy_2(self, game):
-        # TODO: Some advanced policy you want to implement
-        ...
-        return random.choice(game.generate())
+        # TODO: Test
+        best_result = -1
+        best_move = None
+        board = game.get_board()
+        for start_loc, destination_loc, content_of_destination in game.generate():
+            if game.get_to_move() == game.White:
+                destination_location = board.col_row(destination_loc)
+                if destination_location[1] == board.rows() - 1:
+                    best_move = (start_loc, destination_loc, content_of_destination)
+                    break
+                result_list = ABAgent.find_all_white_pieces_probability_in_triangle_by_row(destination_location,
+                                    ABAgent.get_all_pieces(board, game.Black), board.rows() - 1, board.cols())
+                result = ABAgent.get_move_value(result_list, destination_location[1] + 1)
+            else:
+                destination_location = board.col_row(destination_loc)
+                if destination_location[1] == 0:
+                    best_move = (start_loc, destination_loc, content_of_destination)
+                    break
+                result_list = ABAgent.find_all_black_pieces_probability_in_triangle_by_row(destination_location,
+                                    ABAgent.get_all_pieces(board, game.White), 0, board.cols())
+                result = ABAgent.get_move_value(result_list, board.rows() - destination_location[1])
+            if result > best_result:
+                best_result = result
+                best_move = (start_loc, destination_loc, content_of_destination)
+        return best_move
 
     # -------------- Methods -----------------------
 
