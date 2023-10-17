@@ -1,8 +1,10 @@
+import math
 import random
 import copy
 import misc.utils as utils
 import misc.tree as tree
 
+C = 1 / math.sqrt(2)
 
 class NodeLabel:
 
@@ -61,10 +63,12 @@ class Search:
             return
 
         def select(node_id):
-            # TODO: Modify to use UCT for action selection.
-            ...
+            # TODO: test
+            def uct(node):
+                return node.q.avg + C * math.sqrt(math.log(node.n) / node.q.n)
+
             node_label = self._tree.node_label(node_id)
-            max_i = random.randint(0, len(node_label.moves) - 1)
+            max_i = utils.argmax(node_label.q, node_label.len, uct)
             return max_i, node_label.moves[max_i]
 
         def playout(game):
