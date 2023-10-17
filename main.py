@@ -1,9 +1,12 @@
 import argparse
-import game.breakthrough as breakthrough
-import agents.mm_agent as mm_agent
-import agents.mcts_agent as mcts_agent
-import misc.play as play
 from timeit import default_timer as timer
+import agents.ab_agent as ab_agent
+import agents.greedy_agent as greedy_agent
+# import agents.mcts_agent as mcts_agent
+import agents.mm_agent as mm_agent
+import agents.random_agent as random_agent
+import game.breakthrough as breakthrough
+import misc.play as play
 
 # Set up and parse command-line arguments.
 ap = argparse.ArgumentParser()
@@ -25,13 +28,13 @@ agent_params = {'abort': args['abort'], 'number': args['number'], 'eval': args['
 
 # Set up the game and agents.
 game = breakthrough.Breakthrough(board_size, board_size)
-# agents = [ab_agent.ABAgent('1', agent_params),
-#          mm_agent.MMAgent('1', agent_params),
-#          random_agent.RandomAgent('1', agent_params),
-#          greedy_agent.GreedyAgent('1', agent_params)]
+agents = [ab_agent.ABAgent('1', agent_params),
+         mm_agent.MMAgent('1', agent_params),
+         random_agent.RandomAgent('1', agent_params),
+         greedy_agent.GreedyAgent('1', agent_params)]
 
-agents = [mm_agent.MMAgent('1', agent_params),
-          mcts_agent.MCTSAgent('1', agent_params)]
+# agents = [mm_agent.MMAgent('1', agent_params),
+#           mcts_agent.MCTSAgent('1', agent_params)]
 
 # Run a tournament and show the results.
 start_time = timer()
