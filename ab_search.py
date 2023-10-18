@@ -1,6 +1,6 @@
-from misc.utils import MaxDepth, Infinity, Loss, NoMove
 import misc.pv as pv
-import random
+from misc.utils import MaxDepth, Infinity, NoMove
+
 
 class Search:
 
@@ -18,7 +18,7 @@ class Search:
             nonlocal nodes, do_abort
             nodes += 1
             if game.is_terminal() or depth <= 0:
-                return self._evaluator(game.get_board())
+                return self._evaluator(game)
             elif self._abort_checker.do_abort(0, nodes):
                 do_abort = True
                 return 0
