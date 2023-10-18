@@ -1,5 +1,5 @@
-import agents.mm_based_agent as mm_based_agent
 import ab_search as search
+import agents.mm_based_agent as mm_based_agent
 from game.breakthrough import Breakthrough
 
 
@@ -79,7 +79,7 @@ class ABAgent(mm_based_agent.MMBasedAgent):
 
     @classmethod
     def evaluate_state(cls, game, state):
-        if game.get_to_move() == state.White:
+        if game.get_to_move() == Breakthrough.White:
             return cls.evaluate_state_white(state)
         return cls.evaluate_state_black(state)
 

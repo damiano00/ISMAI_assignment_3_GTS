@@ -1,12 +1,12 @@
 import argparse
 from timeit import default_timer as timer
+
 import agents.ab_agent as ab_agent
-import agents.greedy_agent as greedy_agent
 # import agents.mcts_agent as mcts_agent
 import agents.mm_agent as mm_agent
-import agents.random_agent as random_agent
 import game.breakthrough as breakthrough
 import misc.play as play
+from agents import mcts_agent
 
 # Set up and parse command-line arguments.
 ap = argparse.ArgumentParser()
@@ -24,24 +24,30 @@ print(args)
 # Set configuration variables to argument values.
 board_size = args['board']
 num_games = args['games']
-agent_params = {'abort': args['abort'], 'number': args['number'], 'eval': args['eval'], 'verbose': args['verbose']}
+agent_params = {'abort': args['abort'], 'number': args['number'], 'eval': 1, 'verbose': args['verbose']}
+agent_params_2 = {'abort': args['abort'], 'number': args['number'], 'eval': 2, 'verbose': args['verbose']}
 
 # Set up the game and agents.
 game = breakthrough.Breakthrough(board_size, board_size)
-agents = [ab_agent.ABAgent('1', agent_params),
-         mm_agent.MMAgent('1', agent_params),
-         random_agent.RandomAgent('1', agent_params),
-         greedy_agent.GreedyAgent('1', agent_params)]
+
+agents_list = [
+    [ab_agent.ABAgent('1', agent_params), mm_agent.MMAgent('2', agent_params)],
+    [ab_agent.ABAgent('1', agent_params), ab_agent.ABAgent('2', agent_params_2)],
+    [mcts_agent.MCTSAgent('1', agent_params), mm_agent.MMAgent('2', agent_params)],
+    [mcts_agent.MCTSAgent('1', agent_params), mcts_agent.MCTSAgent('2', agent_params_2)],
+    [ab_agent.ABAgent('1', agent_params_2), mcts_agent.MCTSAgent('2', agent_params_2)],
+]
 
 # agents = [mm_agent.MMAgent('1', agent_params),
 #           mcts_agent.MCTSAgent('1', agent_params)]
 
 # Run a tournament and show the results.
-start_time = timer()
-game_records = play.play_a_tournament(game, agents, num_games, True if args['verbose'] > 0 else False)
-print('Tournament results (', round(timer() - start_time, 2), 'sec. )')
-score_color, score_agents = play.score_game_records(game_records, agents)
-print(score_color, score_agents)
+for agents in agents_list:
+    start_time = timer()
+    game_records = play.play_a_tournament(game, agents, num_games, True if args['verbose'] > 0 else False)
+    print('Tournament results (', round(timer() - start_time, 2), 'sec. )')
+    score_color, score_agents = play.score_game_records(game_records, agents)
+    print(score_color, score_agents)
 
 
 # NOTE: iterations vs. depth.
