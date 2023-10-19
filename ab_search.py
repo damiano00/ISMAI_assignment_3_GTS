@@ -14,7 +14,7 @@ class Search:
 
     def best_move(self, game: Breakthrough):
         """ fail-soft alpha-beta search """
-        def mini_max(_game: Breakthrough, ply, depth, pv, alpha, beta):
+        def alpha_beta(_game: Breakthrough, ply, depth, pv, alpha, beta):
             assert (ply >= 0)
             nonlocal nodes, do_abort
             nodes += 1
@@ -30,7 +30,7 @@ class Search:
             moves = self._generate_ordered_moves(ply, _game, pv[ply] if ply < len(pv) else NoMove)
             for move in moves:
                 _game.make(move)
-                value = -mini_max(_game, ply + 1, depth - 1, pv, -beta, -alpha)
+                value = -alpha_beta(_game, ply + 1, depth - 1, pv, -beta, -alpha)
                 _game.retract(move)
                 if value > alpha:
                     alpha = value
@@ -75,7 +75,7 @@ class Search:
         pv_list = []
         for d in range(1, MaxDepth + 1):
             pv_list = self._pv.get_pv()
-            v = mini_max(game, 0, d, pv_list, -Infinity, Infinity)
+            v = alpha_beta(game, 0, d, pv_list, -Infinity, Infinity)
             if self._params.get('verbose', 0) > 0:
                 print(d, v, ' ', end='')
                 for m in self._pv.get_pv():
