@@ -12,7 +12,6 @@ class Search:
         self._pv = pv.PV(MaxDepth)
 
     def best_move(self, game):
-
         def mini_max(game, ply, depth, pv):
             assert(ply >= 0)
             nonlocal nodes, do_abort
