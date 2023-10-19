@@ -86,12 +86,14 @@ class Search:
             return
 
         def select(node_id):
-            # TODO: test
-            def uct(node):
-                return node.q.avg + C * math.sqrt(math.log(node.n) / node.q.n)
+            def uct(_node_id, move_index):
+                node_label = self._tree.node_label(_node_id)
+                if node_label.q[move_index].n == 0:
+                    return utils.Infinity
+                return node_label.q[move_index].avg + C * math.sqrt(math.log(node_label.n) / node_label.q[move_index].n)
 
             node_label = self._tree.node_label(node_id)
-            max_i = utils.argmax(node_label.q, node_label.len, uct)
+            max_i = utils.argmax(node_id, len(node_label.moves), uct)
             return max_i, node_label.moves[max_i]
 
         def playout(game):
