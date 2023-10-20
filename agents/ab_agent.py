@@ -84,14 +84,40 @@ class ABAgent(mm_based_agent.MMBasedAgent):
         return cls.evaluate_state_black(state)
 
     @staticmethod
-    def evaluate_enhanced(game):
+    def evaluate_enhanced(game: Breakthrough):
         # TODO: Test
-        pieces = game.get_pce_count()
-        state = game.get_board()
-        if game.get_to_move() == game.White:
-            return pieces[Breakthrough.White] - pieces[Breakthrough.Black] + ABAgent.evaluate_state(game, state)
-        return pieces[Breakthrough.Black] - pieces[Breakthrough.White] + ABAgent.evaluate_state(game, state)
+        board = game.get_board()
+        white_outcome = black_outcome = 0
+        white_pieces = ABAgent.get_all_pieces(board, Breakthrough.White)
+        black_pieces = ABAgent.get_all_pieces(board, Breakthrough.Black)
+        for x in white_pieces:
+            if x[1] == board.rows() - 1:
+                white_outcome += 100
+            elif x[1] == board.rows() - 2:
+                white_outcome += 16
+            elif x[1] == board.rows() - 3:
+                white_outcome += 8
+            elif x[1] == board.rows() - 4:
+                white_outcome += 6
+            elif x[1] == board.rows() - 5:
+                white_outcome += 2
+            else:
+                white_outcome += 1
 
+        for x in black_pieces:
+            if x[1] == 0:
+                black_outcome += 100
+            elif x[1] == 1:
+                black_outcome += 16
+            elif x[1] == 2:
+                black_outcome += 8
+            elif x[1] == 3:
+                black_outcome += 6
+            elif x[1] == 4:
+                black_outcome += 2
+            else:
+                black_outcome += 1
+        return ((white_outcome - black_outcome) + (len(white_pieces)-len(black_pieces))) * (1 if game.get_to_move() == game.White else -1)
     # -------------- Simple move-ordering functions  -----------------------
 
     def __init__(self, name, params):
