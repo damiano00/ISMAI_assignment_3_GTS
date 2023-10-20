@@ -4,8 +4,9 @@ import copy
 import misc.utils as utils
 import misc.tree as tree
 from agents.ab_agent import ABAgent
+from game.breakthrough import Breakthrough
 
-C = 1 / math.sqrt(2)
+C = math.sqrt(2)
 
 class NodeLabel:
 
@@ -34,9 +35,44 @@ class Search:
                 capture_moves.append(m)
         return random.choice(capture_moves) if capture_moves else random.choice(moves)
 
-    def playout_policy_2(self, game):
+    def playout_policy_2(self, game: Breakthrough):
         # TODO: Test
-        best_result = -1
+        capture_moves, moves = [], game.generate(shuffle=True)
+        for m in moves:
+            if m[2] != Breakthrough.Board.NoPce:
+                capture_moves.append(m)
+
+        board = game.get_board()
+
+        move_forward_moves = []
+        for m in moves:
+            if m[2] == Breakthrough.Board.NoPce and m[1] - m[0] == board.d_n:
+                move_forward_moves.append(m)
+        # Sort move forward, first the ones that are closer to the end of the board
+        # move_forward_moves.sort(key=lambda x: x[1])
+
+        move_towards_center_moves = []
+        column_number = board.cols()
+        half_board_length = column_number // 2
+        for m in moves:
+            if board.col(m[0]) <= half_board_length and half_board_length - 1 <= board.col(m[1]) <= half_board_length + 1:
+                move_towards_center_moves.append(m)
+            elif board.col(m[0]) >= half_board_length and half_board_length - 1 <= board.col(m[1]) <= half_board_length + 1:
+                move_towards_center_moves.append(m)
+        # Sort move towards center, first the ones that are further away from the center
+        # move_towards_center_moves.sort(key=lambda x: abs(board.col(x[0]) - half_board_length))
+
+        if capture_moves:
+            return capture_moves[0]
+
+        if move_forward_moves:
+            return move_forward_moves[0]
+
+        if move_towards_center_moves:
+            return move_towards_center_moves[0]
+
+        return moves[0]
+        """best_result = -1
         best_move = None
         board = game.get_board()
         for start_loc, destination_loc, content_of_destination in game.generate():
@@ -60,7 +96,7 @@ class Search:
                 best_result = result
                 best_move = (start_loc, destination_loc, content_of_destination)
         return best_move
-
+"""
     # -------------- Methods -----------------------
 
     def __init__(self, abort_checker, params):
