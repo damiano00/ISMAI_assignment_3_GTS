@@ -1,9 +1,9 @@
+import copy
 import math
 import random
-import copy
-import misc.utils as utils
+
 import misc.tree as tree
-from agents.ab_agent import ABAgent
+import misc.utils as utils
 from game.breakthrough import Breakthrough
 
 C = math.sqrt(2)
@@ -72,31 +72,7 @@ class Search:
             return move_towards_center_moves[0]
 
         return moves[0]
-        """best_result = -1
-        best_move = None
-        board = game.get_board()
-        for start_loc, destination_loc, content_of_destination in game.generate():
-            if game.get_to_move() == game.White:
-                destination_location = board.col_row(destination_loc)
-                if destination_location[1] == board.rows() - 1:
-                    best_move = (start_loc, destination_loc, content_of_destination)
-                    break
-                result_list = ABAgent.find_all_white_pieces_probability_in_triangle_by_row(destination_location,
-                                    ABAgent.get_all_pieces(board, game.Black), board.rows() - 1, board.cols())
-                result = ABAgent.get_move_value(result_list, destination_location[1] + 1)
-            else:
-                destination_location = board.col_row(destination_loc)
-                if destination_location[1] == 0:
-                    best_move = (start_loc, destination_loc, content_of_destination)
-                    break
-                result_list = ABAgent.find_all_black_pieces_probability_in_triangle_by_row(destination_location,
-                                    ABAgent.get_all_pieces(board, game.White), 0, board.cols())
-                result = ABAgent.get_move_value(result_list, board.rows() - destination_location[1])
-            if result > best_result:
-                best_result = result
-                best_move = (start_loc, destination_loc, content_of_destination)
-        return best_move
-"""
+
     # -------------- Methods -----------------------
 
     def __init__(self, abort_checker, params):
